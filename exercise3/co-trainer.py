@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader
 
 
 class Trainer:
-    def __init__(self, model, trainset, testset, cfg, vis_idx=0):
+    def __init__(self, model, trainset, testset, cfg, weight_vis=False):
         self.device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
         self.num_epochs = cfg['num_epochs']
         self.model = model.to(self.device)
@@ -24,7 +24,7 @@ class Trainer:
                                 num_workers=2,
                                 pin_memory=True)
         self.input_shape = trainset[0][0].shape
-        self.vis_idx = vis_idx
+        self.weight_vis = weight_vis
 
 
     def train(self):
@@ -89,15 +89,16 @@ class Trainer:
         ax2.set_xticks(x)
         ax2.set_ylabel('Accuracy')
 
-        weight = self.model[self.vis_idx].weight.data[:10].cpu()
-        for i in range(10):
-            ax = self.fig.add_subplot(2, 10, 11 + i, xticks=[], yticks=[])
-            if self.model[self.vis_idx].__class__.__name__ == 'Linear':
-                img = weight[i].reshape(self.input_shape).mean(0)
-            else:
-                img = weight[i].mean(0)
-            img = (img - img.min()) / (img.max() - img.min())
-            ax.imshow(img, cmap='gray', interpolation='none')
+        if self.weight_vis:
+            weight = self.model.layer1.weight.data[:10]
+            for i in range(10):
+                ax = self.fig.add_subplot(2, 10, 11 + i, xticks=[], yticks=[])
+                if self.model.layer1.__class__.__name__ == 'Linear':
+                    img = weight[i].reshape(self.input_shape).mean(0)
+                else:
+                    img = weight[i].mean(0)
+                img = (img - img.min()) / (img.max() - img.min())
+                ax.imshow(img, cmap='gray', interpolation='none')
 
         plt.pause(1)
 

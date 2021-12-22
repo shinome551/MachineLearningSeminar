@@ -2,6 +2,7 @@
 # coding: utf-8
 
 import argparse
+from collections import OrderedDict
 
 import torch
 import torch.nn as nn
@@ -39,16 +40,31 @@ def main():
         Normalize(mean=0.5, std=0.5)
     ])
     
-    trainset = MNIST(root='../data', train=True, download=True, transform=transform)
-    testset = MNIST(root='../data', train=False, download=True, transform=transform)
+    trainset = MNIST(root='./data', train=True, download=True, transform=transform)
+    testset = MNIST(root='./data', train=False, download=True, transform=transform)
 
-    model = nn.Sequential(
-        nn.Flatten(),
-        nn.Linear(784, 10)
-    )
+    ## label transition matrix
+    noise_type = "symmetry"
+    noise_rate = 0.2
+    num_classes = 10
+    if noise_type == "symmetry":
+        Q = torch.empty(size=(num_classes, num_classes))
+        Q.fill_(noise_rate / (num_classes - 1))
+        Q += (1.0 - noise_rate - Q[0,0]) * torch.eye(10)
+    else:
+        pass
+    print(Q[0])
+
+    noised_trainset = MNIST(root='./data', train=True, download=True, transform=transform)
+    noised_trainset.targets = torch.multinomial(Q[trainset.targets], 1)
+    
+    model = nn.Sequential(OrderedDict([
+        ('flatten', nn.Flatten()),
+        ('layer1', nn.Linear(784, 10))
+    ]))
 
     print('start training')
-    trainer = Trainer(model, trainset, testset, cfg, vis_idx=1)
+    trainer = Trainer(model, trainset, testset, cfg)
     trainer.run()
 
     
