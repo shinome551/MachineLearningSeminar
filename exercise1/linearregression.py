@@ -18,7 +18,7 @@ def main():
     lr = 0.1
     loss_list = []
     w_list = [w.data.tolist()]
-    for i in range(100):
+    for i in range(50):
         f_w = f(x_sample, w)
         loss = torch.mean((y - f_w) ** 2)
         grad = torch.autograd.grad(loss, w)[0]
@@ -26,7 +26,7 @@ def main():
             w += lr * grad
         w_list.append(w.data.tolist())
         loss_list.append(loss.item())
-        print(f'iter:{i}, loss:{loss_list[-1]:.3f}, w0:{w[0].item()}, w1:{w[1].item()}',  end='\r')
+        print(f'iter:{i}, loss:{loss_list[-1]:.3f}, w0:{w[0].item()}, w1:{w[1].item()}', end='\r')
         if len(loss_list) > 1 and abs(loss_list[-1] - loss_list[-2]) < 0.001:
             print('\nconvergence!')
             break
