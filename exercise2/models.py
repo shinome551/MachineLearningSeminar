@@ -20,7 +20,7 @@ def string2model(name):
             nn.ReLU(),
             nn.MaxPool2d((2,2), stride=2, padding=0),
             nn.Flatten(),
-            nn.Linear(1024, 256),
+            nn.Linear(-1, 256),
             nn.ReLU(),
             nn.Linear(256, 10)
         )
@@ -57,15 +57,6 @@ def string2model(name):
         )
     elif name == 'problem4':
         model = nn.Sequential(
-            nn.Conv2d(3, 16, kernel_size=3, stride=2, padding=1),
-            nn.ReLU(),
-            nn.Conv2d(16, 32, kernel_size=3, stride=2, padding=1),
-            nn.ReLU(),
-            nn.Conv2d(32, 64, kernel_size=3, stride=2, padding=1),
-            nn.ReLU(),
-            nn.Conv2d(64, 500, kernel_size=1),
-            nn.ReLU(),
-            nn.AvgPool2d(4),
             nn.Flatten(),
             nn.Linear(500, 256),
             nn.ReLU(),
