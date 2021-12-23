@@ -57,6 +57,9 @@ def string2model(name):
         )
     elif name == 'problem4':
         model = nn.Sequential(
+
+
+            
             nn.Flatten(),
             nn.Linear(500, 256),
             nn.ReLU(),

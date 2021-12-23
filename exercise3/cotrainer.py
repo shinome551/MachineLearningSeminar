@@ -38,6 +38,7 @@ class CoTrainer:
         self.input_shape = trainset[0][0].shape
         self.vis_idx = vis_idx
         self.noise_rate = cfg['noise_rate']
+        self.mode = cfg['mode']
 
 
     def train(self, lamd):
@@ -117,7 +118,7 @@ class CoTrainer:
         ax1.legend()
         ax1.grid(True)
         ax1.set_xlabel('epoch')
-        ax1.set_xticks(x)
+        #ax1.set_xticks(x)
         ax1.set_ylabel('Loss')
 
         ax2 = self.fig.add_subplot(1 + int(weight_vis), 2, 2)
@@ -126,7 +127,7 @@ class CoTrainer:
         ax2.legend()
         ax2.grid(True)
         ax2.set_xlabel('epoch')
-        ax2.set_xticks(x)
+        #ax2.set_xticks(x)
         ax2.set_ylabel('Accuracy')
 
         if weight_vis:
@@ -143,18 +144,18 @@ class CoTrainer:
         plt.pause(1)
 
 
-    def save_hist(self, save_dir='outputs'):
-        with open(os.path.join(save_dir, 'co-teaching.json'), mode='wt', encoding='utf-8') as f:
+    def save_hist(self):
+        with open(os.path.join('outputs', self.mode + '.json'), mode='wt', encoding='utf-8') as f:
             json.dump(self.train_hist, f, ensure_ascii=False, indent=4)
 
 
-    def run(self, save_dir='outputs'):
+    def run(self):
         self.train_hist = {}
         self.train_hist['trainloss'] = []
         self.train_hist['testacc'] = []
         self.train_hist['testloss'] = []
         self.train_hist['trainacc'] = []
-        self.fig = plt.figure(figsize=(9, 6))
+        self.fig = plt.figure(figsize=(12, 6))
         self.plot()
 
         E_k = 10
@@ -170,5 +171,5 @@ class CoTrainer:
             self.train_hist['testacc'].append(testacc)
             self.plot()
 
-        plt.savefig(os.path.join(save_dir, 'co-teaching.png'))
+        plt.savefig(os.path.join('outputs', self.mode + '.png'))
         plt.show()
